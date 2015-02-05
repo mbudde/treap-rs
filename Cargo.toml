@@ -1,0 +1,5 @@
+[package]
+
+name = "treap"
+version = "0.0.1"
+authors = ["Michael Budde <mbudde@gmail.com>"]
