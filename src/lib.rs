@@ -14,10 +14,30 @@ pub struct Iter<'a, K: 'a, V: 'a> {
 }
 
 impl<K: Ord, V> Treap<K, V> {
+
+    /// Create an empty treap.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use treap::Treap;
+    /// let mut t = Treap::new();
+    /// t.insert(5, "yellow");
+    /// ```
     pub fn new() -> Treap<K, V> {
         Treap { root: None }
     }
 
+    /// Borrow the value corresponding to the given key if it exists in the treap.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut t = treap::Treap::new();
+    /// t.insert(5, "yellow");
+    /// assert_eq!(t.get(&5), Some(&"yellow"));
+    /// assert_eq!(t.get(&10), None);
+    /// ```
     pub fn get(&self, key: &K) -> Option<&V> {
         match self.root {
             None => None,
@@ -25,10 +45,33 @@ impl<K: Ord, V> Treap<K, V> {
         }
     }
 
+    /// Insert a value with a given key. Returns the previous value if the key is already in the
+    /// treap.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut t = treap::Treap::new();
+    /// assert_eq!(t.insert(5, "yellow"), None);
+    /// assert_eq!(t.insert(5, "blue"), Some("yellow"));
+    /// ```
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
         Node::insert_or_replace(&mut self.root, Node::new(key, value))
     }
 
+    /// Return an iterator over keys and values in the treap. The order is arbitrary.
+    ///
+    /// ```
+    /// let mut t = treap::Treap::new();
+    /// t.insert(1, "red");
+    /// t.insert(2, "blue");
+    /// t.insert(3, "green");
+    ///
+    /// // Print keys and values in arbitrary order.
+    /// for (k, v) in t.iter() {
+    ///     println!("{}: {}", k, v);
+    /// }
+    /// ```
     pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {
         Iter {
             nodes: match self.root {
