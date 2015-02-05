@@ -1,4 +1,4 @@
-use std::ops::{Deref};
+use std::iter::{FromIterator};
 
 mod node;
 
@@ -63,9 +63,7 @@ impl<K: Ord, V> Treap<K, V> {
     ///
     /// ```
     /// let mut t = treap::Treap::new();
-    /// t.insert(1, "red");
-    /// t.insert(2, "blue");
-    /// t.insert(3, "green");
+    /// t.extend(vec![(1, "red"), (2, "blue"), (3, "green")].into_iter());
     ///
     /// // Print keys and values in arbitrary order.
     /// for (k, v) in t.iter() {
@@ -76,7 +74,7 @@ impl<K: Ord, V> Treap<K, V> {
         Iter {
             nodes: match self.root {
                 None => Vec::new(),
-                Some(ref n) => vec![n.deref()]
+                Some(ref n) => vec![&**n]
             }
         }
     }
@@ -91,13 +89,31 @@ impl<'a, K, V> Iterator for Iter<'a, K, V> {
             None => None,
             Some(node) => {
                 if let Some(ref boxed) = node.left {
-                    self.nodes.push(boxed.deref());
+                    self.nodes.push(&**boxed);
                 }
                 if let Some(ref boxed) = node.right {
-                    self.nodes.push(boxed.deref());
+                    self.nodes.push(&**boxed);
                 }
                 Some((&node.key, &node.value))
             }
         }
+    }
+}
+
+impl<K: Ord, V> Extend<(K, V)> for Treap<K, V> {
+    #[inline]
+    fn extend<T: Iterator<Item=(K, V)>>(&mut self, mut iter: T) {
+        for (k, v) in iter {
+            self.insert(k, v);
+        }
+    }
+}
+
+impl<K: Ord, V> FromIterator<(K, V)> for Treap<K, V> {
+    #[inline]
+    fn from_iter<T: Iterator<Item=(K, V)>>(iter: T) -> Treap<K, V> {
+        let mut treap = Treap::new();
+        treap.extend(iter);
+        treap
     }
 }
