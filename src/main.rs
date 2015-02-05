@@ -16,8 +16,8 @@ fn main() {
     println!("{:?}", t.insert(2, "bar2".to_string()));
 
     println!("{:?}", t);
-    println!("{:?}", t.find(&2));
-    println!("{:?}", t.find(&3));
+    println!("{:?}", t.get(&2));
+    println!("{:?}", t.get(&3));
 
     for (k, v) in t.iter() {
         println!("key: {}, val: {}", k, v);

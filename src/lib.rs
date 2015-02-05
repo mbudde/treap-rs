@@ -90,7 +90,7 @@ impl<K: Ord, V> Treap<K, V> {
         Treap { root: None }
     }
 
-    pub fn find(&self, key: &K) -> Option<&V> {
+    pub fn get(&self, key: &K) -> Option<&V> {
         let mut node = &self.root;
         loop {
             match *node {
