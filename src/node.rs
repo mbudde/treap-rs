@@ -1,7 +1,6 @@
 use std::mem;
 use std::rand;
 use std::cmp::Ordering;
-use std::ops::{Deref,DerefMut};
 
 #[derive(Debug, Clone)]
 pub struct Node<K, V> {
@@ -28,10 +27,10 @@ impl<K: Ord, V> Node<K, V> {
         match self.key.cmp(key) {
             Ordering::Equal => Some(&self.value),
             Ordering::Less => {
-                self.left.as_ref().and_then(|n| n.deref().get(key))
+                self.left.as_ref().and_then(|n| n.get(key))
             }
             Ordering::Greater => {
-                self.right.as_ref().and_then(|n| n.deref().get(key))
+                self.right.as_ref().and_then(|n| n.get(key))
             }
         }
     }
@@ -43,7 +42,7 @@ impl<K: Ord, V> Node<K, V> {
                 None
             }
             Some(ref mut boxed_node) => {
-                boxed_node.deref_mut().insert(new)
+                boxed_node.insert(new)
             }
         }
     }
@@ -72,15 +71,15 @@ impl<K: Ord, V> Node<K, V> {
     fn is_heap_property_violated(&self, subtree: &Option<Box<Node<K, V>>>) -> bool {
         match *subtree {
             None => false,
-            Some(ref b) => self.priority < b.deref().priority
+            Some(ref b) => self.priority < b.priority
         }
     }
 
     fn right_rotate(&mut self) {
         let left = mem::replace(&mut self.left, None);
         if let Some(mut boxed) = left {
-            mem::swap(self, boxed.deref_mut());
-            mem::swap(&mut self.right, &mut boxed.deref_mut().left);
+            mem::swap(self, &mut *boxed);
+            mem::swap(&mut self.right, &mut boxed.left);
             mem::replace(&mut self.right, Some(boxed));
         }
     }
@@ -88,8 +87,8 @@ impl<K: Ord, V> Node<K, V> {
     fn left_rotate(&mut self) {
         let right = mem::replace(&mut self.right, None);
         if let Some(mut boxed) = right {
-            mem::swap(self, boxed.deref_mut());
-            mem::swap(&mut self.left, &mut boxed.deref_mut().right);
+            mem::swap(self, &mut *boxed);
+            mem::swap(&mut self.left, &mut boxed.right);
             mem::replace(&mut self.left, Some(boxed));
         }
     }
