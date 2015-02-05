@@ -25,31 +25,34 @@ pub struct Iter<'a, K: 'a, V: 'a> {
 
 impl<K: Ord, V> Node<K, V> {
 
-    fn insert_or_replace(subtree: &mut Option<Box<Node<K, V>>>, new: Node<K, V>) {
+    fn insert_or_replace(subtree: &mut Option<Box<Node<K, V>>>, new: Node<K, V>) -> Option<V> {
         match *subtree {
             None => {
                 mem::replace(subtree, Some(Box::new(new)));
+                None
             }
             Some(ref mut boxed_node) => {
-                boxed_node.deref_mut().insert(new);
+                boxed_node.deref_mut().insert(new)
             }
         }
     }
 
-    fn insert(&mut self, node: Node<K, V>) {
+    fn insert(&mut self, node: Node<K, V>) -> Option<V> {
         match node.key.cmp(&self.key) {
-            Ordering::Equal   => self.value = node.value,
-            Ordering::Less    => {
-                Node::insert_or_replace(&mut self.left, node);
+            Ordering::Equal => { Some(mem::replace(&mut self.value, node.value)) }
+            Ordering::Less => {
+                let old_value = Node::insert_or_replace(&mut self.left, node);
                 if self.is_heap_property_violated(&self.left) {
                     self.right_rotate();
                 }
+                old_value
             }
             Ordering::Greater => {
-                Node::insert_or_replace(&mut self.right, node);
+                let old_value = Node::insert_or_replace(&mut self.right, node);
                 if self.is_heap_property_violated(&self.right) {
                     self.left_rotate();
                 }
+                old_value
             }
         }
     }
@@ -103,7 +106,7 @@ impl<K: Ord, V> Treap<K, V> {
         }
     }
 
-    pub fn insert(&mut self, key: K, value: V) {
+    pub fn insert(&mut self, key: K, value: V) -> Option<V> {
         let new_node = Node {
             key: key,
             value: value,
@@ -111,7 +114,7 @@ impl<K: Ord, V> Treap<K, V> {
             left: None,
             right: None,
         };
-        Node::insert_or_replace(&mut self.root, new_node);
+        Node::insert_or_replace(&mut self.root, new_node)
     }
 
     pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {

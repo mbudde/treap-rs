@@ -12,7 +12,8 @@ fn main() {
     t.insert(2, "bar".to_string());
     t.insert(8, "trolol".to_string());
     t.insert(11, "fisk".to_string());
-    t.insert(2, "bar2".to_string());
+
+    println!("{:?}", t.insert(2, "bar2".to_string()));
 
     println!("{:?}", t);
     println!("{:?}", t.find(&2));
