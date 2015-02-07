@@ -37,6 +37,29 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// ```
     pub fn len(&self) -> usize { self.size }
 
+    /// Return true if the treap contains no elements.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// assert!(t.is_empty());
+    /// t.insert(5, 1);
+    /// assert!(!t.is_empty());
+    /// ```
+    pub fn is_empty(&self) -> bool { self.size == 0 }
+
+    /// Removes all elements from the treap.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// t.insert(5, 1);
+    /// t.clear();
+    /// assert!(t.is_empty());
+    /// ```
+    pub fn clear(&mut self) {
+        self.root.take();
+        self.size = 0;
+    }
+
     /// Borrow the value corresponding to the given key if it exists in the treap.
     ///
     /// # Example
