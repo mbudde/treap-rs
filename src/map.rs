@@ -79,12 +79,10 @@ impl<K: Ord, V> TreapMap<K, V> {
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
-    /// t.extend(vec![(1, "red"), (2, "blue"), (3, "green")].into_iter());
+    /// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
     ///
-    /// // Print keys and values in arbitrary order.
-    /// for (k, v) in t.iter() {
-    ///     println!("{}: {}", k, v);
-    /// }
+    /// let sum = t.iter().fold(0, |s, (&k, &v)| s + k + v);
+    /// assert_eq!(sum, 656);
     /// ```
     pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {
         Iter {
