@@ -93,6 +93,27 @@ impl<K: Ord, V> TreapMap<K, V> {
         }
     }
 
+    /// Return an mutable iterator over keys and values in the treap. The order is arbitrary.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
+    ///
+    /// for (k, v) in t.iter_mut() {
+    ///     *v += *k;
+    /// }
+    /// assert_eq!(t.get(&2), Some(&122));
+    /// ```
+    pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, K, V> {
+        IterMut {
+            nodes: match self.root {
+                None => Vec::new(),
+                Some(ref mut n) => vec![&mut **n]
+            }
+        }
+    }
     /// Return an iterator that moves keys and values out of treap. The order is arbitrary.
     ///
     /// # Example
@@ -157,6 +178,28 @@ impl<'a, K, V> Iterator for Iter<'a, K, V> {
     }
 }
 
+pub struct IterMut<'a, K: 'a, V: 'a> {
+    nodes: Vec<&'a mut Node<K, V>>,
+}
+
+impl<'a, K, V> Iterator for IterMut<'a, K, V> {
+    type Item = (&'a K, &'a mut V);
+
+    fn next(&mut self) -> Option<(&'a K, &'a mut V)> {
+        match self.nodes.pop() {
+            None => None,
+            Some(node) => {
+                if let Some(boxed) = node.left.as_mut() {
+                    self.nodes.push(&mut **boxed);
+                }
+                if let Some(boxed) = node.right.as_mut() {
+                    self.nodes.push(&mut **boxed);
+                }
+                Some((&node.key, &mut node.value))
+            }
+        }
+    }
+}
 pub struct IntoIter<K, V> {
     nodes: Vec<Node<K, V>>,
 }
