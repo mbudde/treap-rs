@@ -47,8 +47,8 @@ impl<K: Ord, V> Node<K, V> {
                 mem::replace(subtree, Some(Box::new(new)));
                 None
             }
-            Some(ref mut boxed_node) => {
-                boxed_node.insert(new)
+            Some(ref mut node) => {
+                node.insert(new)
             }
         }
     }
@@ -127,21 +127,39 @@ impl<K: Ord, V> Node<K, V> {
         }
     }
 
+    //       q               p
+    //      / \             / \
+    //     p  C   --->     A  q
+    //    / \                / \
+    //   A  B               B  C
     fn right_rotate(&mut self) {
+        // Cut left subtree of q
         let left = mem::replace(&mut self.left, None);
-        if let Some(mut boxed) = left {
-            mem::swap(self, &mut *boxed);
-            mem::swap(&mut self.right, &mut boxed.left);
-            mem::replace(&mut self.right, Some(boxed));
+        if let Some(mut node) = left {
+            // Let subtree p be root and `node` point to q
+            mem::swap(self, &mut *node);
+            // Move subtree B from p to left subtree of q
+            mem::swap(&mut self.right, &mut node.left);
+            // Let q be right child of p
+            mem::replace(&mut self.right, Some(node));
         }
     }
 
+    //     p               q
+    //    / \             / \
+    //   A  q   --->     p  C
+    //     / \          / \
+    //    B  C         A  B
     fn left_rotate(&mut self) {
+        // Cut right subtree of p
         let right = mem::replace(&mut self.right, None);
-        if let Some(mut boxed) = right {
-            mem::swap(self, &mut *boxed);
-            mem::swap(&mut self.left, &mut boxed.right);
-            mem::replace(&mut self.left, Some(boxed));
+        if let Some(mut node) = right {
+            // Let subtree q be root and `node` point to p
+            mem::swap(self, &mut *node);
+            // Move subtree B from q to right subtree of p
+            mem::swap(&mut self.left, &mut node.right);
+            // Let p be left child of q
+            mem::replace(&mut self.left, Some(node));
         }
     }
 }
