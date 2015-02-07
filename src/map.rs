@@ -7,6 +7,7 @@ use node::{Node};
 #[derive(Debug, Clone)]
 pub struct TreapMap<K, V> {
     root: Option<Box<Node<K, V>>>,
+    size: usize,
 }
 
 impl<K: Ord, V> TreapMap<K, V> {
@@ -23,8 +24,18 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// }
     /// ```
     pub fn new() -> TreapMap<K, V> {
-        TreapMap { root: None }
+        TreapMap { root: None, size: 0 }
     }
+
+    /// Return the number of elements in the treap.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// assert_eq!(t.len(), 0);
+    /// t.insert(5, 1);
+    /// assert_eq!(t.len(), 1);
+    /// ```
+    pub fn len(&self) -> usize { self.size }
 
     /// Borrow the value corresponding to the given key if it exists in the treap.
     ///
@@ -56,7 +67,9 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// assert_eq!(t.insert(5, "blue"), Some("yellow"));
     /// ```
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
-        Node::insert_or_replace(&mut self.root, Node::new(key, value))
+        let res = Node::insert_or_replace(&mut self.root, Node::new(key, value));
+        if res.is_none() { self.size += 1; }
+        res
     }
 
     /// Delete the given key from the treap and return the value associated with it if any.
@@ -70,7 +83,9 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// assert_eq!(t.delete(&10), None);
     /// ```
     pub fn delete(&mut self, key: &K) -> Option<V> {
-        Node::delete(&mut self.root, key)
+        let res = Node::delete(&mut self.root, key);
+        if res.is_some() { self.size -= 1; }
+        res
     }
 
     /// Return an iterator over keys and values in the treap. The order is arbitrary.
@@ -220,5 +235,25 @@ impl<K, V> Iterator for IntoIter<K, V> {
                 Some((node.key, node.value))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TreapMap;
+
+    #[test]
+    fn test_len() {
+        let mut t = TreapMap::new();
+        assert_eq!(t.len(), 0);
+        t.insert(1, 1);
+        assert_eq!(t.len(), 1);
+        t.insert(1, 2);
+        assert_eq!(t.len(), 1);
+        t.insert(2, 2);
+        t.insert(3, 3);
+        assert_eq!(t.len(), 3);
+        t.delete(&2);
+        assert_eq!(t.len(), 2);
     }
 }
