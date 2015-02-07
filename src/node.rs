@@ -111,22 +111,10 @@ impl<K: Ord, V> Node<K, V> {
                 subtree.take().map(|n| n.value)
             }
             DeleteCases::RotateLeft => {
-                match *subtree {
-                    None => None,
-                    Some(ref mut root) => {
-                        root.left_rotate();
-                        Node::rotate_down(&mut root.left)
-                    }
-                }
+                subtree.as_mut().and_then(|n| { n.left_rotate(); Node::rotate_down(&mut n.left) })
             }
             DeleteCases::RotateRight => {
-                match *subtree {
-                    None => None,
-                    Some(ref mut root) => {
-                        root.right_rotate();
-                        Node::rotate_down(&mut root.right)
-                    }
-                }
+                subtree.as_mut().and_then(|n| { n.right_rotate(); Node::rotate_down(&mut n.right) })
             }
         }
     }
