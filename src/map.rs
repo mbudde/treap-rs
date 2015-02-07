@@ -33,6 +33,8 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.insert(5, "yellow");
+    /// t.insert(3, "blue");
+    /// t.insert(8, "green");
     /// assert_eq!(t.get(&5), Some(&"yellow"));
     /// assert_eq!(t.get(&10), None);
     /// ```

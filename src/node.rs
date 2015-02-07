@@ -30,12 +30,14 @@ impl<K: Ord, V> Node<K, V> {
     }
 
     pub fn get(&self, key: &K) -> Option<&V> {
-        match self.key.cmp(key) {
+        match key.cmp(&self.key) {
             Ordering::Equal => Some(&self.value),
             Ordering::Less => {
+                println!("going left");
                 self.left.as_ref().and_then(|n| n.get(key))
             }
             Ordering::Greater => {
+                println!("going right");
                 self.right.as_ref().and_then(|n| n.get(key))
             }
         }
