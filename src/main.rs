@@ -12,6 +12,7 @@ fn main() {
     t.insert(2, "bar");
     t.insert(8, "trolol");
     t.insert(11, "fisk");
+    t.delete(&8);
 
     println!("{:?}", t.insert(2, "bar2"));
 

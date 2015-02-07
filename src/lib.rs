@@ -59,6 +59,20 @@ impl<K: Ord, V> Treap<K, V> {
         Node::insert_or_replace(&mut self.root, Node::new(key, value))
     }
 
+    /// Delete the given key from the treap and return the value associated with it if any.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut t = treap::Treap::new();
+    /// t.insert(5, "blue");
+    /// assert_eq!(t.delete(&5), Some("blue"));
+    /// assert_eq!(t.delete(&10), None);
+    /// ```
+    pub fn delete(&mut self, key: &K) -> Option<V> {
+        Node::delete(&mut self.root, key)
+    }
+
     /// Return an iterator over keys and values in the treap. The order is arbitrary.
     ///
     /// ```

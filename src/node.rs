@@ -11,6 +11,12 @@ pub struct Node<K, V> {
     pub right: Option<Box<Node<K, V>>>,
 }
 
+enum DeleteCases {
+    DeleteNode,
+    RotateLeft,
+    RotateRight
+}
+
 impl<K: Ord, V> Node<K, V> {
 
     pub fn new(key: K, value: V) -> Node<K, V> {
@@ -63,6 +69,64 @@ impl<K: Ord, V> Node<K, V> {
                     self.left_rotate();
                 }
                 old_value
+            }
+        }
+    }
+
+    pub fn delete(subtree: &mut Option<Box<Node<K, V>>>, key: &K) -> Option<V> {
+        {
+            let node = match *subtree {
+                None => return None,
+                Some(ref mut n) => n
+            };
+            match key.cmp(&node.key) {
+                Ordering::Less    => { return Node::delete(&mut node.left, key) }
+                Ordering::Greater => { return Node::delete(&mut node.right, key) }
+                Ordering::Equal => {}
+            }
+        }
+        Node::rotate_down(subtree)
+    }
+
+    fn rotate_down(subtree: &mut Option<Box<Node<K, V>>>) -> Option<V> {
+        let case = match *subtree {
+            None => return None,
+            Some(ref root) => {
+                match (&root.left, &root.right) {
+                    (&None, &None) => { DeleteCases::DeleteNode }
+                    (&Some(ref left), &Some(ref right)) => {
+                        if left.priority >= right.priority {
+                            DeleteCases::RotateRight
+                        } else {
+                            DeleteCases::RotateLeft
+                        }
+                    }
+                    (&Some(_), &None) => { DeleteCases::RotateRight }
+                    (&None, &Some(_)) => { DeleteCases::RotateLeft }
+                }
+            }
+        };
+        match case {
+            DeleteCases::DeleteNode => {
+                subtree.take().map(|n| n.value)
+            }
+            DeleteCases::RotateLeft => {
+                match *subtree {
+                    None => None,
+                    Some(ref mut root) => {
+                        root.left_rotate();
+                        Node::rotate_down(&mut root.left)
+                    }
+                }
+            }
+            DeleteCases::RotateRight => {
+                match *subtree {
+                    None => None,
+                    Some(ref mut root) => {
+                        root.right_rotate();
+                        Node::rotate_down(&mut root.right)
+                    }
+                }
             }
         }
     }
