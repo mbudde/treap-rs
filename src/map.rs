@@ -3,7 +3,7 @@ use std::iter::{FromIterator};
 
 use node::{Node};
 
-
+/// A map based on a randomized treap
 #[derive(Debug, Clone)]
 pub struct TreapMap<K, V> {
     root: Option<Box<Node<K, V>>>,
