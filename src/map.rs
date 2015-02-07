@@ -14,8 +14,6 @@ impl<K: Ord, V> TreapMap<K, V> {
 
     /// Create an empty treap.
     ///
-    /// # Example
-    ///
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.insert(5, "yellow");
@@ -62,8 +60,6 @@ impl<K: Ord, V> TreapMap<K, V> {
 
     /// Borrow the value corresponding to the given key if it exists in the treap.
     ///
-    /// # Example
-    ///
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.insert(5, "yellow");
@@ -82,8 +78,6 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// Insert a value with a given key. Returns the previous value if the key is already in the
     /// treap.
     ///
-    /// # Example
-    ///
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// assert_eq!(t.insert(5, "yellow"), None);
@@ -96,8 +90,6 @@ impl<K: Ord, V> TreapMap<K, V> {
     }
 
     /// Delete the given key from the treap and return the value associated with it if any.
-    ///
-    /// # Example
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
@@ -112,8 +104,6 @@ impl<K: Ord, V> TreapMap<K, V> {
     }
 
     /// Return an iterator over keys and values in the treap. The order is arbitrary.
-    ///
-    /// # Example
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
@@ -133,8 +123,6 @@ impl<K: Ord, V> TreapMap<K, V> {
 
     /// Return an mutable iterator over keys and values in the treap. The order is arbitrary.
     ///
-    /// # Example
-    ///
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
@@ -153,8 +141,6 @@ impl<K: Ord, V> TreapMap<K, V> {
         }
     }
     /// Return an iterator that moves keys and values out of treap. The order is arbitrary.
-    ///
-    /// # Example
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
