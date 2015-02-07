@@ -4,7 +4,7 @@ mod node;
 
 use node::{Node};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Treap<K, V> {
     root: Option<Box<Node<K, V>>>,
 }
