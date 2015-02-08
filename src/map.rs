@@ -75,6 +75,24 @@ impl<K: Ord, V> TreapMap<K, V> {
         }
     }
 
+    /// Return a mutable reference to the value corresponding to the given key if it exists in the treap.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// t.insert(5, "yellow");
+    /// match t.get_mut(&5) {
+    ///     Some(x) => *x = "blue",
+    ///     None => (),
+    /// }
+    /// assert_eq!(t.get(&5), Some(&"blue"));
+    /// ```
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        match self.root {
+            Some(ref mut n) => n.get_mut(key),
+            None => None,
+        }
+    }
+
     /// Insert a value with a given key. Returns the previous value if the key is already in the
     /// treap.
     ///

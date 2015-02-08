@@ -33,12 +33,22 @@ impl<K: Ord, V> Node<K, V> {
         match key.cmp(&self.key) {
             Ordering::Equal => Some(&self.value),
             Ordering::Less => {
-                println!("going left");
                 self.left.as_ref().and_then(|n| n.get(key))
             }
             Ordering::Greater => {
-                println!("going right");
                 self.right.as_ref().and_then(|n| n.get(key))
+            }
+        }
+    }
+
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        match key.cmp(&self.key) {
+            Ordering::Equal => Some(&mut self.value),
+            Ordering::Less => {
+                self.left.as_mut().and_then(|n| n.get_mut(key))
+            }
+            Ordering::Greater => {
+                self.right.as_mut().and_then(|n| n.get_mut(key))
             }
         }
     }
