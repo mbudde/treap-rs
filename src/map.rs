@@ -107,16 +107,16 @@ impl<K: Ord, V> TreapMap<K, V> {
         res
     }
 
-    /// Delete the given key from the treap and return the value associated with it if any.
+    /// Remove the given key from the treap and return the value associated with it if any.
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.insert(5, "blue");
-    /// assert_eq!(t.delete(&5), Some("blue"));
-    /// assert_eq!(t.delete(&10), None);
+    /// assert_eq!(t.remove(&5), Some("blue"));
+    /// assert_eq!(t.remove(&10), None);
     /// ```
-    pub fn delete(&mut self, key: &K) -> Option<V> {
-        let res = Node::delete(&mut self.root, key);
+    pub fn remove(&mut self, key: &K) -> Option<V> {
+        let res = Node::remove(&mut self.root, key);
         if res.is_some() { self.size -= 1; }
         res
     }
@@ -280,7 +280,7 @@ mod tests {
         t.insert(2, 2);
         t.insert(3, 3);
         assert_eq!(t.len(), 3);
-        t.delete(&2);
+        t.remove(&2);
         assert_eq!(t.len(), 2);
     }
 }
