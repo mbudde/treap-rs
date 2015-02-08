@@ -1,5 +1,6 @@
 
 use std::iter::{FromIterator};
+use std::ops::{Index, IndexMut};
 
 use node::{Node};
 
@@ -206,6 +207,20 @@ impl<K: Ord, V> FromIterator<(K, V)> for TreapMap<K, V> {
         let mut treap = TreapMap::new();
         treap.extend(iter);
         treap
+    }
+}
+
+impl<K: Ord, V> Index<K> for TreapMap<K, V> {
+    type Output = V;
+
+    fn index(&self, key: &K) -> &V {
+        self.get(key).expect("no entry found for key")
+    }
+}
+
+impl<K: Ord, V> IndexMut<K> for TreapMap<K, V> {
+    fn index_mut(&mut self, key: &K) -> &mut V {
+        self.get_mut(key).expect("no entry found for key")
     }
 }
 
