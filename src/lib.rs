@@ -11,7 +11,9 @@
 #![feature(core)]
 #![feature(rand)]
 
-pub use map::*;
+pub use map::TreapMap;
+pub use set::TreapSet;
 
 mod node;
-mod map;
+pub mod map;
+pub mod set;
