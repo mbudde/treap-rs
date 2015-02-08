@@ -163,7 +163,7 @@ impl<K: Ord, V> TreapMap<K, V> {
 
 impl<K: Ord, V> Extend<(K, V)> for TreapMap<K, V> {
     #[inline]
-    fn extend<T: Iterator<Item=(K, V)>>(&mut self, mut iter: T) {
+    fn extend<T: Iterator<Item=(K, V)>>(&mut self, iter: T) {
         for (k, v) in iter {
             self.insert(k, v);
         }
