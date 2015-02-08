@@ -25,7 +25,7 @@ fn main() {
     }
 
     assert_eq!(t.get(&5), Some(&25));
-    assert_eq!(t.delete(&3), Some(9));
+    assert_eq!(t.remove(&3), Some(9));
 }
 ```
 
