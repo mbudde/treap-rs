@@ -93,6 +93,18 @@ impl<K: Ord, V> TreapMap<K, V> {
         }
     }
 
+    /// Returns true if the key is present in the treap.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// t.insert(5, "yellow");
+    /// assert_eq!(t.contains_key(&5), true);
+    /// assert_eq!(t.contains_key(&8), false);
+    /// ```
+    pub fn contains_key(&self, key: &K) -> bool {
+        self.get(key).is_some()
+    }
+
     /// Insert a value with a given key. Returns the previous value if the key is already in the
     /// treap.
     ///
