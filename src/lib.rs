@@ -8,6 +8,8 @@
 //! This implementation is randomized meaning that the priorities are assigned at random. The treap
 //! has an expected depth of O(log n).
 
+#![feature(core)]
+#![feature(rand)]
 
 pub use map::*;
 
