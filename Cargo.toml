@@ -10,3 +10,6 @@ homepage = "https://github.com/mbudde/treap-rs"
 repository = "https://github.com/mbudde/treap-rs"
 documentation = "http://mbudde.github.io/treap-rs/treap/index.html"
 description = "Randomized treap implementation"
+
+[dependencies]
+rand = "0.1.*"

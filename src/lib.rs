@@ -9,7 +9,8 @@
 //! has an expected depth of O(log n).
 
 #![feature(core)]
-#![feature(rand)]
+
+extern crate rand;
 
 pub use map::TreapMap;
 pub use set::TreapSet;

@@ -1,6 +1,6 @@
 use std::mem;
-use std::rand;
 use std::cmp::Ordering;
+use rand;
 
 #[derive(Debug, Clone)]
 pub struct Node<K, V> {
