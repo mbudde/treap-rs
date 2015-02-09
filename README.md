@@ -5,6 +5,8 @@ A randomized treap implementation.
 
 [![Build Status](https://travis-ci.org/mbudde/treap-rs.svg)](https://travis-ci.org/mbudde/treap-rs)
 
+[Documentation](http://mbudde.github.io/treap-rs/treap/index.html)
+
 ## Example
 
 ```rust
