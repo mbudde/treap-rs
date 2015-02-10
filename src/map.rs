@@ -190,6 +190,24 @@ impl<K: Ord, V> TreapMap<K, V> {
             }
         }
     }
+
+    /// Returns an iterator over keys and values in the treap that gives the keys in sorted order.
+    ///
+    /// ```
+    /// let mut t = treap::TreapMap::new();
+    /// t.extend((1..10).map(|x| (x, "a")));
+    ///
+    /// let v = t.iter_ordered().map(|(&k, _)| k).collect();
+    /// assert_eq!(v, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    /// ```
+    pub fn iter_ordered(&self) -> OrderedIter<K, V> {
+        OrderedIter {
+            nodes: match self.root {
+                None => Vec::new(),
+                Some(ref n) => vec![Traversal::Left(&**n)]
+            }
+        }
+    }
 }
 
 impl<K: Ord, V> Extend<(K, V)> for TreapMap<K, V> {
@@ -287,6 +305,42 @@ impl<K, V> Iterator for IntoIter<K, V> {
                     self.nodes.push(*boxed);
                 }
                 Some((node.key, node.value))
+            }
+        }
+    }
+}
+
+enum Traversal<T> {
+    // Traverse left subtree before emitting value at node
+    Left(T),
+    // Emit value at node and continue with right subtree
+    Right(T),
+}
+
+pub struct OrderedIter<'a, K: 'a, V: 'a> {
+    nodes: Vec<Traversal<&'a Node<K, V>>>,
+}
+
+impl<'a, K, V> Iterator for OrderedIter<'a, K, V> {
+    type Item = (&'a K, &'a V);
+
+    fn next(&mut self) -> Option<(&'a K, &'a V)> {
+        use self::Traversal::{Left, Right};
+        loop {
+            match self.nodes.pop() {
+                None => return None,
+                Some(Left(node)) => {
+                    self.nodes.push(Right(node));
+                    if let Some(ref node_box) = node.left {
+                        self.nodes.push(Left(&**node_box));
+                    }
+                }
+                Some(Right(node)) => {
+                    if let Some(ref node_box) = node.right {
+                        self.nodes.push(Left(&**node_box));
+                    }
+                    return Some((&node.key, &node.value));
+                }
             }
         }
     }
