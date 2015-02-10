@@ -1,9 +1,9 @@
 
 # treap-rs
 
-A randomized treap implementation.
-
 [![Build Status](https://travis-ci.org/mbudde/treap-rs.svg)](https://travis-ci.org/mbudde/treap-rs)
+
+A randomized treap implementation.
 
 [Documentation](http://mbudde.github.io/treap-rs/treap/index.html)
 
