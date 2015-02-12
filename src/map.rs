@@ -4,11 +4,38 @@ use std::ops::{Index, IndexMut};
 
 use node::{Node};
 
-/// A map based on a randomized treap
+/// A map based on a randomized treap.
 #[derive(Debug, Clone)]
 pub struct TreapMap<K, V> {
     root: Option<Box<Node<K, V>>>,
     size: usize,
+}
+
+/// An iterator over a treap's entries.
+pub struct Iter<'a, K: 'a, V: 'a> {
+    nodes: Vec<&'a Node<K, V>>,
+}
+
+/// A mutable iterator over a treap's entries.
+pub struct IterMut<'a, K: 'a, V: 'a> {
+    nodes: Vec<&'a mut Node<K, V>>,
+}
+
+/// An owning iterator over a treap's entries.
+pub struct IntoIter<K, V> {
+    nodes: Vec<Node<K, V>>,
+}
+
+enum Traversal<T> {
+    // Traverse left subtree before emitting value at node
+    Left(T),
+    // Emit value at node and continue with right subtree
+    Right(T),
+}
+
+/// An iterator over a treap's entries in key order.
+pub struct OrderedIter<'a, K: 'a, V: 'a> {
+    nodes: Vec<Traversal<&'a Node<K, V>>>,
 }
 
 impl<K: Ord, V> TreapMap<K, V> {
@@ -276,10 +303,6 @@ impl<K: Ord, V> IndexMut<K> for TreapMap<K, V> {
     }
 }
 
-pub struct Iter<'a, K: 'a, V: 'a> {
-    nodes: Vec<&'a Node<K, V>>,
-}
-
 impl<'a, K, V> Iterator for Iter<'a, K, V> {
     type Item = (&'a K, &'a V);
 
@@ -297,10 +320,6 @@ impl<'a, K, V> Iterator for Iter<'a, K, V> {
             }
         }
     }
-}
-
-pub struct IterMut<'a, K: 'a, V: 'a> {
-    nodes: Vec<&'a mut Node<K, V>>,
 }
 
 impl<'a, K, V> Iterator for IterMut<'a, K, V> {
@@ -321,9 +340,6 @@ impl<'a, K, V> Iterator for IterMut<'a, K, V> {
         }
     }
 }
-pub struct IntoIter<K, V> {
-    nodes: Vec<Node<K, V>>,
-}
 
 impl<K, V> Iterator for IntoIter<K, V> {
     type Item = (K, V);
@@ -342,17 +358,6 @@ impl<K, V> Iterator for IntoIter<K, V> {
             }
         }
     }
-}
-
-enum Traversal<T> {
-    // Traverse left subtree before emitting value at node
-    Left(T),
-    // Emit value at node and continue with right subtree
-    Right(T),
-}
-
-pub struct OrderedIter<'a, K: 'a, V: 'a> {
-    nodes: Vec<Traversal<&'a Node<K, V>>>,
 }
 
 impl<'a, K, V> Iterator for OrderedIter<'a, K, V> {
