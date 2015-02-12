@@ -1,5 +1,5 @@
 
-use std::iter::{FromIterator};
+use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Index, IndexMut};
 
 use node::{Node};
@@ -142,6 +142,9 @@ impl<K: Ord, V> TreapMap<K, V> {
     ///
     /// let sum = t.iter().fold(0, |s, (&k, &v)| s + k + v);
     /// assert_eq!(sum, 656);
+    ///
+    /// // Also available via the `IntoIterator` trait:
+    /// for (k, v) in &t { println!("{}: {}", k, v) }
     /// ```
     pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {
         Iter {
@@ -162,6 +165,9 @@ impl<K: Ord, V> TreapMap<K, V> {
     ///     *v += *k;
     /// }
     /// assert_eq!(t.get(&2), Some(&122));
+    ///
+    /// // Also available via the `IntoIterator` trait:
+    /// for (k, v) in &mut t { println!("{}: {}", k, v) }
     /// ```
     pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, K, V> {
         IterMut {
@@ -176,11 +182,15 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// ```
     /// let mut t = treap::TreapMap::new();
     /// t.extend(vec![(1, "red"), (2, "blue"), (3, "green")].into_iter());
+    /// let t2 = t.clone();
     ///
     /// // Print keys and values in arbitrary order.
     /// for (k, v) in t.into_iter() {
     ///     println!("{}: {}", k, v);
     /// }
+    ///
+    /// // Also available via the `IntoIterator` trait:
+    /// for (k, v) in t2 { println!("{}: {}", k, v) }
     /// ```
     pub fn into_iter(self) -> IntoIter<K, V> {
         IntoIter {
@@ -225,6 +235,30 @@ impl<K: Ord, V> FromIterator<(K, V)> for TreapMap<K, V> {
         let mut treap = TreapMap::new();
         treap.extend(iter);
         treap
+    }
+}
+
+impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
+    type IntoIter = IntoIter<K, V>;
+
+    fn into_iter(self) -> IntoIter<K, V> {
+        self.into_iter()
+    }
+}
+
+impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
+    type IntoIter = Iter<'a, K, V>;
+
+    fn into_iter(self) -> Iter<'a, K, V> {
+        self.iter()
+    }
+}
+
+impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
+    type IntoIter = IterMut<'a, K, V>;
+
+    fn into_iter(self) -> IterMut<'a, K, V> {
+        self.iter_mut()
     }
 }
 

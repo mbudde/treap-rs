@@ -22,7 +22,7 @@ fn main() {
         t.insert(i, i);
     }
 
-    for (k, v) in t.iter_mut() {
+    for (k, v) in &mut t {
         *v = *v * *v;
     }
 
