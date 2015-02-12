@@ -1,4 +1,5 @@
 
+use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Index, IndexMut};
 
@@ -262,6 +263,12 @@ impl<K: Ord, V> FromIterator<(K, V)> for TreapMap<K, V> {
         let mut treap = TreapMap::new();
         treap.extend(iter);
         treap
+    }
+}
+
+impl<K: Ord, V> Default for TreapMap<K, V> {
+    fn default() -> TreapMap<K, V> {
+        TreapMap::new()
     }
 }
 
