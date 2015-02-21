@@ -250,7 +250,7 @@ impl<K: Ord, V> TreapMap<K, V> {
 
 impl<K: Ord, V> Extend<(K, V)> for TreapMap<K, V> {
     #[inline]
-    fn extend<T: Iterator<Item=(K, V)>>(&mut self, iter: T) {
+    fn extend<T: IntoIterator<Item=(K, V)>>(&mut self, iter: T) {
         for (k, v) in iter {
             self.insert(k, v);
         }
@@ -259,7 +259,7 @@ impl<K: Ord, V> Extend<(K, V)> for TreapMap<K, V> {
 
 impl<K: Ord, V> FromIterator<(K, V)> for TreapMap<K, V> {
     #[inline]
-    fn from_iter<T: Iterator<Item=(K, V)>>(iter: T) -> TreapMap<K, V> {
+    fn from_iter<T: IntoIterator<Item=(K, V)>>(iter: T) -> TreapMap<K, V> {
         let mut treap = TreapMap::new();
         treap.extend(iter);
         treap
@@ -273,6 +273,7 @@ impl<K: Ord, V> Default for TreapMap<K, V> {
 }
 
 impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
+    type Item = (K, V);
     type IntoIter = IntoIter<K, V>;
 
     fn into_iter(self) -> IntoIter<K, V> {
@@ -281,6 +282,7 @@ impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
 }
 
 impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
+    type Item = (&'a K, &'a V);
     type IntoIter = Iter<'a, K, V>;
 
     fn into_iter(self) -> Iter<'a, K, V> {
@@ -289,6 +291,7 @@ impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
 }
 
 impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
+    type Item = (&'a K, &'a mut V);
     type IntoIter = IterMut<'a, K, V>;
 
     fn into_iter(self) -> IterMut<'a, K, V> {
