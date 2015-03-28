@@ -299,7 +299,7 @@ impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
     }
 }
 
-impl<K: Ord, V> Index<K> for TreapMap<K, V> {
+impl<'a, K: Ord, V> Index<&'a K> for TreapMap<K, V> {
     type Output = V;
 
     fn index(&self, key: &K) -> &V {
@@ -307,7 +307,7 @@ impl<K: Ord, V> Index<K> for TreapMap<K, V> {
     }
 }
 
-impl<K: Ord, V> IndexMut<K> for TreapMap<K, V> {
+impl<'a, K: Ord, V> IndexMut<&'a K> for TreapMap<K, V> {
     fn index_mut(&mut self, key: &K) -> &mut V {
         self.get_mut(key).expect("no entry found for key")
     }
