@@ -18,7 +18,7 @@ use treap::TreapMap;
 fn main() {
     let mut t = TreapMap::new();
 
-    for i in range(0, 10) {
+    for i in 0..10 {
         t.insert(i, i);
     }
 
