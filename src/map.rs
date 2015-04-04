@@ -235,7 +235,7 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// let mut t = treap::TreapMap::new();
     /// t.extend((1..10).map(|x| (x, "a")));
     ///
-    /// let v = t.iter_ordered().map(|(&k, _)| k).collect();
+    /// let v: Vec<i32> = t.iter_ordered().map(|(&k, _)| k).collect();
     /// assert_eq!(v, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     /// ```
     pub fn iter_ordered(&self) -> OrderedIter<K, V> {
