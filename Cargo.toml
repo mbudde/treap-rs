@@ -1,7 +1,7 @@
 [package]
 
 name = "treap"
-version = "0.0.3"
+version = "0.1.0"
 authors = ["Michael Budde <mbudde@gmail.com>"]
 license = "MIT"
 keywords = ["container", "data-structure", "map", "set", "tree"]

@@ -162,73 +162,6 @@ impl<K: Ord, V> TreapMap<K, V> {
         res
     }
 
-    /// Return an iterator over keys and values in the treap. The order is arbitrary.
-    ///
-    /// ```
-    /// let mut t = treap::TreapMap::new();
-    /// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
-    ///
-    /// let sum = t.iter().fold(0, |s, (&k, &v)| s + k + v);
-    /// assert_eq!(sum, 656);
-    ///
-    /// // Also available via the `IntoIterator` trait:
-    /// for (k, v) in &t { println!("{}: {}", k, v) }
-    /// ```
-    pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {
-        Iter {
-            nodes: match self.root {
-                None => Vec::new(),
-                Some(ref n) => vec![&**n]
-            }
-        }
-    }
-
-    /// Return an mutable iterator over keys and values in the treap. The order is arbitrary.
-    ///
-    /// ```
-    /// let mut t = treap::TreapMap::new();
-    /// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
-    ///
-    /// for (k, v) in t.iter_mut() {
-    ///     *v += *k;
-    /// }
-    /// assert_eq!(t.get(&2), Some(&122));
-    ///
-    /// // Also available via the `IntoIterator` trait:
-    /// for (k, v) in &mut t { println!("{}: {}", k, v) }
-    /// ```
-    pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, K, V> {
-        IterMut {
-            nodes: match self.root {
-                None => Vec::new(),
-                Some(ref mut n) => vec![&mut **n]
-            }
-        }
-    }
-    /// Return an iterator that moves keys and values out of treap. The order is arbitrary.
-    ///
-    /// ```
-    /// let mut t = treap::TreapMap::new();
-    /// t.extend(vec![(1, "red"), (2, "blue"), (3, "green")].into_iter());
-    /// let t2 = t.clone();
-    ///
-    /// // Print keys and values in arbitrary order.
-    /// for (k, v) in t.into_iter() {
-    ///     println!("{}: {}", k, v);
-    /// }
-    ///
-    /// // Also available via the `IntoIterator` trait:
-    /// for (k, v) in t2 { println!("{}: {}", k, v) }
-    /// ```
-    pub fn into_iter(self) -> IntoIter<K, V> {
-        IntoIter {
-            nodes: match self.root {
-                None => Vec::new(),
-                Some(n) => vec![*n]
-            }
-        }
-    }
-
     /// Returns an iterator over keys and values in the treap that gives the keys in sorted order.
     ///
     /// ```
@@ -272,30 +205,76 @@ impl<K: Ord, V> Default for TreapMap<K, V> {
     }
 }
 
+/// Return an iterator that moves keys and values out of treap. The order is arbitrary.
+///
+/// ```
+/// let mut t = treap::TreapMap::new();
+/// t.extend(vec![(1, "red"), (2, "blue"), (3, "green")].into_iter());
+///
+/// // Print keys and values in arbitrary order.
+/// for (k, v) in t {
+///     println!("{}: {}", k, v);
+/// }
+/// ```
 impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
     type Item = (K, V);
     type IntoIter = IntoIter<K, V>;
 
     fn into_iter(self) -> IntoIter<K, V> {
-        self.into_iter()
+        IntoIter {
+            nodes: match self.root {
+                None => Vec::new(),
+                Some(n) => vec![*n]
+            }
+        }
     }
 }
 
+/// Return an iterator over keys and values in the treap. The order is arbitrary.
+///
+/// ```
+/// let mut t = treap::TreapMap::new();
+/// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
+///
+/// let sum = (&t).into_iter().fold(0, |s, (&k, &v)| s + k + v);
+/// assert_eq!(sum, 656);
+/// ```
 impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
     type Item = (&'a K, &'a V);
     type IntoIter = Iter<'a, K, V>;
 
     fn into_iter(self) -> Iter<'a, K, V> {
-        self.iter()
+        Iter {
+            nodes: match self.root {
+                None => Vec::new(),
+                Some(ref n) => vec![&**n]
+            }
+        }
     }
 }
 
+/// Return an mutable iterator over keys and values in the treap. The order is arbitrary.
+///
+/// ```
+/// let mut t = treap::TreapMap::new();
+/// t.extend(vec![(1, 200), (2, 120), (3, 330)].into_iter());
+///
+/// for (k, v) in &mut t {
+///     *v += *k;
+/// }
+/// assert_eq!(t.get(&2), Some(&122));
+/// ```
 impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
     type Item = (&'a K, &'a mut V);
     type IntoIter = IterMut<'a, K, V>;
 
     fn into_iter(self) -> IterMut<'a, K, V> {
-        self.iter_mut()
+        IterMut {
+            nodes: match self.root {
+                None => Vec::new(),
+                Some(ref mut n) => vec![&mut **n]
+            }
+        }
     }
 }
 
