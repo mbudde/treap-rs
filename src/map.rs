@@ -123,7 +123,6 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     pub fn get(&self, key: &K) -> Option<&V> {
         self.root.as_ref().and_then(|n| n.get(key))
     }
-    }
 
     /// Return a mutable reference to the value corresponding to the given key if it exists in the treap.
     ///
