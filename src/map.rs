@@ -121,10 +121,8 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// assert_eq!(t.get(&10), None);
     /// ```
     pub fn get(&self, key: &K) -> Option<&V> {
-        match self.root {
-            None => None,
-            Some(ref n) => n.get(key)
-        }
+        self.root.as_ref().and_then(|n| n.get(key))
+    }
     }
 
     /// Return a mutable reference to the value corresponding to the given key if it exists in the treap.
@@ -139,10 +137,7 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// assert_eq!(t.get(&5), Some(&"blue"));
     /// ```
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
-        match self.root {
-            Some(ref mut n) => n.get_mut(key),
-            None => None,
-        }
+        self.root.as_mut().and_then(|n| n.get_mut(key))
     }
 
     /// Returns true if the key is present in the treap.
