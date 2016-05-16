@@ -1,3 +1,4 @@
+use rand;
 
 use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
@@ -7,9 +8,10 @@ use node::{Node};
 
 /// A map based on a randomized treap.
 #[derive(Debug, Clone)]
-pub struct TreapMap<K, V> {
+pub struct TreapMap<K, V, Rng=rand::XorShiftRng> {
     root: Option<Box<Node<K, V>>>,
     size: usize,
+    rng: Rng,
 }
 
 /// An iterator over a treap's entries.
@@ -39,9 +41,11 @@ pub struct OrderedIter<'a, K: 'a, V: 'a> {
     nodes: Vec<Traversal<&'a Node<K, V>>>,
 }
 
-impl<K: Ord, V> TreapMap<K, V> {
+impl<K: Ord, V> TreapMap<K, V, rand::XorShiftRng> {
 
-    /// Create an empty treap.
+    /// Create an empty treap with the default random number generator. The
+    /// XorShift random number generator is used by default since it is fast,
+    /// but please note that it is not cryptographically secure.
     ///
     /// ```
     /// let mut t = treap::TreapMap::new();
@@ -50,8 +54,27 @@ impl<K: Ord, V> TreapMap<K, V> {
     ///     println!("{}", s);
     /// }
     /// ```
-    pub fn new() -> TreapMap<K, V> {
-        TreapMap { root: None, size: 0 }
+    pub fn new() -> TreapMap<K, V, rand::XorShiftRng> {
+        TreapMap { root: None, size: 0, rng: rand::weak_rng() }
+    }
+
+}
+
+impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
+
+    /// Create an empty treap with a given random number generator.
+    ///
+    /// ```
+    /// extern crate rand;
+    ///# extern crate treap;
+    ///
+    ///# fn main() {
+    /// let mut t = treap::TreapMap::new_with_rng(rand::thread_rng());
+    /// t.insert(5, "yellow");
+    ///# }
+    /// ```
+    pub fn new_with_rng(rng: Rng) -> TreapMap<K, V, Rng> {
+        TreapMap { root: None, size: 0, rng: rng }
     }
 
     /// Return the number of elements in the treap.
@@ -143,7 +166,8 @@ impl<K: Ord, V> TreapMap<K, V> {
     /// assert_eq!(t.insert(5, "blue"), Some("yellow"));
     /// ```
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
-        let res = Node::insert_or_replace(&mut self.root, Node::new(key, value));
+        let priority = self.rng.next_f64();
+        let res = Node::insert_or_replace(&mut self.root, Node::new(key, value, priority));
         if res.is_none() { self.size += 1; }
         res
     }
@@ -181,7 +205,7 @@ impl<K: Ord, V> TreapMap<K, V> {
     }
 }
 
-impl<K: Ord, V> Extend<(K, V)> for TreapMap<K, V> {
+impl<K: Ord, V, Rng: rand::Rng> Extend<(K, V)> for TreapMap<K, V, Rng> {
     #[inline]
     fn extend<T: IntoIterator<Item=(K, V)>>(&mut self, iter: T) {
         for (k, v) in iter {
@@ -216,7 +240,7 @@ impl<K: Ord, V> Default for TreapMap<K, V> {
 ///     println!("{}: {}", k, v);
 /// }
 /// ```
-impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
+impl<K: Ord, V, Rng: rand::Rng> IntoIterator for TreapMap<K, V, Rng> {
     type Item = (K, V);
     type IntoIter = IntoIter<K, V>;
 
@@ -239,7 +263,7 @@ impl<K: Ord, V> IntoIterator for TreapMap<K, V> {
 /// let sum = (&t).into_iter().fold(0, |s, (&k, &v)| s + k + v);
 /// assert_eq!(sum, 656);
 /// ```
-impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
+impl<'a, K: Ord, V, Rng: rand::Rng> IntoIterator for &'a TreapMap<K, V, Rng> {
     type Item = (&'a K, &'a V);
     type IntoIter = Iter<'a, K, V>;
 
@@ -264,7 +288,7 @@ impl<'a, K: Ord, V> IntoIterator for &'a TreapMap<K, V> {
 /// }
 /// assert_eq!(t.get(&2), Some(&122));
 /// ```
-impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
+impl<'a, K: Ord, V, Rng: rand::Rng> IntoIterator for &'a mut TreapMap<K, V, Rng> {
     type Item = (&'a K, &'a mut V);
     type IntoIter = IterMut<'a, K, V>;
 
@@ -278,7 +302,7 @@ impl<'a, K: Ord, V> IntoIterator for &'a mut TreapMap<K, V> {
     }
 }
 
-impl<'a, K: Ord, V> Index<&'a K> for TreapMap<K, V> {
+impl<'a, K: Ord, V, Rng: rand::Rng> Index<&'a K> for TreapMap<K, V, Rng> {
     type Output = V;
 
     fn index(&self, key: &K) -> &V {
@@ -286,7 +310,7 @@ impl<'a, K: Ord, V> Index<&'a K> for TreapMap<K, V> {
     }
 }
 
-impl<'a, K: Ord, V> IndexMut<&'a K> for TreapMap<K, V> {
+impl<'a, K: Ord, V, Rng: rand::Rng> IndexMut<&'a K> for TreapMap<K, V, Rng> {
     fn index_mut(&mut self, key: &K) -> &mut V {
         self.get_mut(key).expect("no entry found for key")
     }

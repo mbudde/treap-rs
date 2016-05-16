@@ -1,6 +1,5 @@
 use std::mem;
 use std::cmp::Ordering;
-use rand;
 
 #[derive(Debug, Clone)]
 pub struct Node<K, V> {
@@ -19,11 +18,11 @@ enum RemovalCases {
 
 impl<K: Ord, V> Node<K, V> {
 
-    pub fn new(key: K, value: V) -> Node<K, V> {
+    pub fn new(key: K, value: V, priority: f64) -> Node<K, V> {
         Node {
             key: key,
             value: value,
-            priority: rand::random(),
+            priority: priority,
             left: None,
             right: None,
         }
