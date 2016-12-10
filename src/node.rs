@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 pub struct Node<K, V> {
     pub key: K,
     pub value: V,
-    priority: f64,
+    priority: f64, // TODO: use a u64! much faster!
     pub left: Option<Box<Node<K, V>>>,
     pub right: Option<Box<Node<K, V>>>,
 }
@@ -66,7 +66,12 @@ impl<K: Ord, V> Node<K, V> {
 
     pub fn insert(&mut self, node: Node<K, V>) -> Option<V> {
         match node.key.cmp(&self.key) {
-            Ordering::Equal => { Some(mem::replace(&mut self.value, node.value)) }
+            Ordering::Equal => {
+                if self.priority < node.priority {
+                    self.priority = node.priority;
+                }
+                Some(mem::replace(&mut self.value, node.value))
+            }
             Ordering::Less => {
                 let old_value = Node::insert_or_replace(&mut self.left, node);
                 if self.is_heap_property_violated(&self.left) {
