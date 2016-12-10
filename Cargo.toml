@@ -1,15 +1,14 @@
 [package]
 
 name = "teardown_tree___treap"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Michael Budde <mbudde@gmail.com>"]
 license = "MIT"
-keywords = ["container", "data-structure", "map", "set", "tree"]
 readme = "README.md"
 homepage = "https://github.com/mbudde/treap-rs"
 repository = "https://github.com/mbudde/treap-rs"
 documentation = "http://mbudde.github.io/treap-rs/treap/index.html"
-description = "Randomized treap implementation"
+description = "Do not use - intended for internal use of teardown_tree crate"
 
 [dependencies]
 rand = "0.3"
