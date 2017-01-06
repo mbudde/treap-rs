@@ -1,6 +1,6 @@
 [package]
 
-name = "teardown_tree___treap"
+name = "treap"
 version = "0.0.2"
 authors = ["Michael Budde <mbudde@gmail.com>"]
 license = "MIT"
