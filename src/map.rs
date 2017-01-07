@@ -2,7 +2,7 @@ use rand;
 
 use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
-use std::ops::{Index, IndexMut};
+use std::ops::{Index, IndexMut, Range};
 
 use node::{Node};
 
@@ -201,10 +201,10 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
 
 
 impl<K: Ord+Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
-    pub fn delete_range(&mut self, from: K, to: K, output: &mut Vec<K>) {
+    pub fn remove_range(&mut self, range: Range<K>, output: &mut Vec<K>) {
         let max_prio = ::std::f64::MAX;
         let mut root: Option<Box<Node<K, ()>>> = self.root.take();
-        let res = Node::insert_or_replace(&mut root, Node::new(from.clone(), (), max_prio));
+        let res = Node::insert_or_replace(&mut root, Node::new(range.start.clone(), (), max_prio));
         let mut root = root.unwrap();
 
         let (left, right) = (root.left.take(), root.right.take());
@@ -213,19 +213,19 @@ impl<K: Ord+Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
         };
 
         let mut root = right;
-        let res = Node::insert_or_replace(&mut root, Node::new(to.clone(), (), max_prio));
+        let res = Node::insert_or_replace(&mut root, Node::new(range.end.clone(), (), max_prio));
         let mut root = root.unwrap();
         let (mid, mut right) = (root.left.take(), root.right.take());
         if res.is_some() {
-            let x = Node::new(to.clone(), (), self.rng.next_f64());
+            let x = Node::new(range.end.clone(), (), self.rng.next_f64());
             Node::insert_or_replace(&mut right, x);
         }
 
-        *root = Node::new(from.clone(), (), max_prio);
+        *root = Node::new(range.start.clone(), (), max_prio);
         root.left = left;
         root.right = right;
         let mut root = Some(root);
-        let res = Node::remove(&mut root, &from);
+        let res = Node::remove(&mut root, &range.start);
         assert!(res.is_some());
 
 
