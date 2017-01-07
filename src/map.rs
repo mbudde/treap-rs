@@ -441,6 +441,7 @@ impl<'a, K, V> Iterator for OrderedIter<'a, K, V> {
 #[cfg(test)]
 mod tests {
     use super::TreapMap;
+    use std::iter::FromIterator;
 
     #[test]
     fn test_len() {
@@ -455,5 +456,38 @@ mod tests {
         assert_eq!(t.len(), 3);
         t.remove(&2);
         assert_eq!(t.len(), 2);
+    }
+
+    #[test]
+    fn delete_range_empty() {
+        let mut t = TreapMap::new();
+
+        let mut out = Vec::new();
+        t.delete_range(2, 4, &mut out);
+        assert_eq!(t.len(), 0);
+        assert_eq!(out.len(), 0);
+    }
+
+    #[test]
+    fn delete_range() {
+        let mut t = TreapMap::from_iter((1..6).map(|k| (k, ())));
+
+        let mut out = Vec::new();
+        t.delete_range(2, 4, &mut out);
+        assert_eq!(t.len(), 3);
+        assert_eq!(&out[..], &[2, 3]);
+
+        let remaining: Vec<_> = t.iter_ordered().map(|(k, _)| *k).collect();
+        assert_eq!(&remaining[..], &[1, 4, 5]);
+    }
+
+    #[test]
+    fn delete_range_nonexisting() {
+        let mut t = TreapMap::from_iter((1..6).map(|k| (k, ())));
+
+        let mut out = Vec::new();
+        t.delete_range(10, 12, &mut out);
+        assert_eq!(t.len(), 5);
+        assert_eq!(out.len(), 0);
     }
 }
