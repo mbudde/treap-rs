@@ -4,6 +4,9 @@ use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Index, IndexMut};
 
+use rand::FromEntropy;
+use rand::prng::XorShiftRng;
+
 use node::Node;
 
 /// A map based on a randomized treap.
@@ -41,7 +44,7 @@ pub struct OrderedIter<'a, K: 'a, V: 'a> {
     nodes: Vec<Traversal<&'a Node<K, V>>>,
 }
 
-impl<K: Ord, V> TreapMap<K, V, rand::XorShiftRng> {
+impl<K: Ord, V> TreapMap<K, V, XorShiftRng> {
     /// Create an empty treap with the default random number generator. The
     /// XorShift random number generator is used by default since it is fast,
     /// but please note that it is not cryptographically secure.
@@ -53,11 +56,11 @@ impl<K: Ord, V> TreapMap<K, V, rand::XorShiftRng> {
     ///     println!("{}", s);
     /// }
     /// ```
-    pub fn new() -> TreapMap<K, V, rand::XorShiftRng> {
+    pub fn new() -> TreapMap<K, V, XorShiftRng> {
         TreapMap {
             root: None,
             size: 0,
-            rng: rand::weak_rng(),
+            rng: XorShiftRng::from_entropy(),
         }
     }
 }
@@ -169,7 +172,7 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// assert_eq!(t.insert(5, "blue"), Some("yellow"));
     /// ```
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
-        let priority = self.rng.next_f64();
+        let priority = self.rng.gen();
         let res = Node::insert_or_replace(&mut self.root, Node::new(key, value, priority));
         if res.is_none() {
             self.size += 1;
@@ -229,7 +232,7 @@ impl<K: Ord + Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
         let mut root = root.unwrap();
         let (mid, mut right) = (root.left.take(), root.right.take());
         if res.is_some() {
-            let x = Node::new(to.clone(), (), self.rng.next_f64());
+            let x = Node::new(to.clone(), (), self.rng.gen());
             Node::insert_or_replace(&mut right, x);
         }
 

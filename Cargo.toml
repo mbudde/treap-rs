@@ -12,4 +12,4 @@ documentation = "http://mbudde.github.io/treap-rs/treap/index.html"
 description = "Randomized treap implementation"
 
 [dependencies]
-rand = "0.3"
+rand = "0.5"
