@@ -4,11 +4,11 @@ use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
 use std::ops::{Index, IndexMut};
 
-use node::{Node};
+use node::Node;
 
 /// A map based on a randomized treap.
 #[derive(Debug, Clone)]
-pub struct TreapMap<K, V, Rng=rand::XorShiftRng> {
+pub struct TreapMap<K, V, Rng = rand::XorShiftRng> {
     root: Option<Box<Node<K, V>>>,
     size: usize,
     rng: Rng,
@@ -42,7 +42,6 @@ pub struct OrderedIter<'a, K: 'a, V: 'a> {
 }
 
 impl<K: Ord, V> TreapMap<K, V, rand::XorShiftRng> {
-
     /// Create an empty treap with the default random number generator. The
     /// XorShift random number generator is used by default since it is fast,
     /// but please note that it is not cryptographically secure.
@@ -55,13 +54,15 @@ impl<K: Ord, V> TreapMap<K, V, rand::XorShiftRng> {
     /// }
     /// ```
     pub fn new() -> TreapMap<K, V, rand::XorShiftRng> {
-        TreapMap { root: None, size: 0, rng: rand::weak_rng() }
+        TreapMap {
+            root: None,
+            size: 0,
+            rng: rand::weak_rng(),
+        }
     }
-
 }
 
 impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
-
     /// Create an empty treap with a given random number generator.
     ///
     /// ```
@@ -74,7 +75,11 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     ///# }
     /// ```
     pub fn new_with_rng(rng: Rng) -> TreapMap<K, V, Rng> {
-        TreapMap { root: None, size: 0, rng: rng }
+        TreapMap {
+            root: None,
+            size: 0,
+            rng,
+        }
     }
 
     /// Return the number of elements in the treap.
@@ -85,7 +90,9 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// t.insert(5, 1);
     /// assert_eq!(t.len(), 1);
     /// ```
-    pub fn len(&self) -> usize { self.size }
+    pub fn len(&self) -> usize {
+        self.size
+    }
 
     /// Return true if the treap contains no elements.
     ///
@@ -95,7 +102,9 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// t.insert(5, 1);
     /// assert!(!t.is_empty());
     /// ```
-    pub fn is_empty(&self) -> bool { self.size == 0 }
+    pub fn is_empty(&self) -> bool {
+        self.size == 0
+    }
 
     /// Removes all elements from the treap.
     ///
@@ -162,7 +171,9 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
         let priority = self.rng.next_f64();
         let res = Node::insert_or_replace(&mut self.root, Node::new(key, value, priority));
-        if res.is_none() { self.size += 1; }
+        if res.is_none() {
+            self.size += 1;
+        }
         res
     }
 
@@ -176,7 +187,9 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
     /// ```
     pub fn remove(&mut self, key: &K) -> Option<V> {
         let res = Node::remove(&mut self.root, key);
-        if res.is_some() { self.size -= 1; }
+        if res.is_some() {
+            self.size -= 1;
+        }
         res
     }
 
@@ -193,14 +206,13 @@ impl<K: Ord, V, Rng: rand::Rng> TreapMap<K, V, Rng> {
         OrderedIter {
             nodes: match self.root {
                 None => Vec::new(),
-                Some(ref n) => vec![Traversal::Left(&**n)]
-            }
+                Some(ref n) => vec![Traversal::Left(&**n)],
+            },
         }
     }
 }
 
-
-impl<K: Ord+Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
+impl<K: Ord + Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
     pub fn delete_range(&mut self, from: K, to: K, output: &mut Vec<K>) {
         let max_prio = ::std::f64::MAX;
         let mut root: Option<Box<Node<K, ()>>> = self.root.take();
@@ -228,26 +240,23 @@ impl<K: Ord+Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
         let res = Node::remove(&mut root, &from);
         assert!(res.is_some());
 
-
         let iter = IntoIter {
             nodes: match mid {
                 None => Vec::new(),
-                Some(n) => vec![*n]
-            }
+                Some(n) => vec![*n],
+            },
         };
 
         output.extend(iter.map(|(k, _)| k));
-
 
         self.root = root;
         self.size -= output.len();
     }
 }
 
-
 impl<K: Ord, V, Rng: rand::Rng> Extend<(K, V)> for TreapMap<K, V, Rng> {
     #[inline]
-    fn extend<T: IntoIterator<Item=(K, V)>>(&mut self, iter: T) {
+    fn extend<T: IntoIterator<Item = (K, V)>>(&mut self, iter: T) {
         for (k, v) in iter {
             self.insert(k, v);
         }
@@ -256,7 +265,7 @@ impl<K: Ord, V, Rng: rand::Rng> Extend<(K, V)> for TreapMap<K, V, Rng> {
 
 impl<K: Ord, V> FromIterator<(K, V)> for TreapMap<K, V> {
     #[inline]
-    fn from_iter<T: IntoIterator<Item=(K, V)>>(iter: T) -> TreapMap<K, V> {
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> TreapMap<K, V> {
         let mut treap = TreapMap::new();
         treap.extend(iter);
         treap
@@ -288,8 +297,8 @@ impl<K: Ord, V, Rng: rand::Rng> IntoIterator for TreapMap<K, V, Rng> {
         IntoIter {
             nodes: match self.root {
                 None => Vec::new(),
-                Some(n) => vec![*n]
-            }
+                Some(n) => vec![*n],
+            },
         }
     }
 }
@@ -311,8 +320,8 @@ impl<'a, K: Ord, V, Rng: rand::Rng> IntoIterator for &'a TreapMap<K, V, Rng> {
         Iter {
             nodes: match self.root {
                 None => Vec::new(),
-                Some(ref n) => vec![&**n]
-            }
+                Some(ref n) => vec![&**n],
+            },
         }
     }
 }
@@ -336,8 +345,8 @@ impl<'a, K: Ord, V, Rng: rand::Rng> IntoIterator for &'a mut TreapMap<K, V, Rng>
         IterMut {
             nodes: match self.root {
                 None => Vec::new(),
-                Some(ref mut n) => vec![&mut **n]
-            }
+                Some(ref mut n) => vec![&mut **n],
+            },
         }
     }
 }

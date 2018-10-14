@@ -1,4 +1,3 @@
-
 //! Randomized Treap
 //!
 //! A treap is a variation of a binary tree. Each inserted key is assigned a priority and the
@@ -13,6 +12,6 @@ extern crate rand;
 pub use map::TreapMap;
 pub use set::TreapSet;
 
-mod node;
 pub mod map;
+mod node;
 pub mod set;

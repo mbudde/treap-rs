@@ -6,7 +6,6 @@ pub struct TreapSet<T> {
 }
 
 impl<T: Ord> TreapSet<T> {
-
     /// Returns a new empty set.
     ///
     /// ```
@@ -21,13 +20,19 @@ impl<T: Ord> TreapSet<T> {
     }
 
     /// Returns the number of elements in the set.
-    pub fn len(&self) -> usize { self.map.len() }
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
 
     /// Remove all elements from the set.
-    pub fn clean(&mut self) { self.map.clear() }
+    pub fn clean(&mut self) {
+        self.map.clear()
+    }
 
     /// Returns true if the set is empty.
-    pub fn is_empty(&self) -> bool { self.map.is_empty() }
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
 
     /// Returns true if the item is in the set.
     pub fn contains(&self, item: &T) -> bool {
@@ -42,5 +47,11 @@ impl<T: Ord> TreapSet<T> {
     /// Remove a item from the set. Returns true if the item was in the set.
     pub fn remove(&mut self, item: &T) -> bool {
         self.map.remove(item).is_some()
+    }
+}
+
+impl<T: Ord> Default for TreapSet<T> {
+    fn default() -> TreapSet<T> {
+        TreapSet::new()
     }
 }

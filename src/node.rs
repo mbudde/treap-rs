@@ -1,5 +1,5 @@
-use std::mem;
 use std::cmp::Ordering;
+use std::mem;
 
 #[derive(Debug, Clone)]
 pub struct Node<K, V> {
@@ -13,16 +13,15 @@ pub struct Node<K, V> {
 enum RemovalCases {
     RemoveNode,
     RotateLeft,
-    RotateRight
+    RotateRight,
 }
 
 impl<K: Ord, V> Node<K, V> {
-
     pub fn new(key: K, value: V, priority: f64) -> Node<K, V> {
         Node {
-            key: key,
-            value: value,
-            priority: priority,
+            key,
+            value,
+            priority,
             left: None,
             right: None,
         }
@@ -31,24 +30,16 @@ impl<K: Ord, V> Node<K, V> {
     pub fn get(&self, key: &K) -> Option<&V> {
         match key.cmp(&self.key) {
             Ordering::Equal => Some(&self.value),
-            Ordering::Less => {
-                self.left.as_ref().and_then(|n| n.get(key))
-            }
-            Ordering::Greater => {
-                self.right.as_ref().and_then(|n| n.get(key))
-            }
+            Ordering::Less => self.left.as_ref().and_then(|n| n.get(key)),
+            Ordering::Greater => self.right.as_ref().and_then(|n| n.get(key)),
         }
     }
 
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         match key.cmp(&self.key) {
             Ordering::Equal => Some(&mut self.value),
-            Ordering::Less => {
-                self.left.as_mut().and_then(|n| n.get_mut(key))
-            }
-            Ordering::Greater => {
-                self.right.as_mut().and_then(|n| n.get_mut(key))
-            }
+            Ordering::Less => self.left.as_mut().and_then(|n| n.get_mut(key)),
+            Ordering::Greater => self.right.as_mut().and_then(|n| n.get_mut(key)),
         }
     }
 
@@ -58,9 +49,7 @@ impl<K: Ord, V> Node<K, V> {
                 mem::replace(subtree, Some(Box::new(new)));
                 None
             }
-            Some(ref mut node) => {
-                node.insert(new)
-            }
+            Some(ref mut node) => node.insert(new),
         }
     }
 
@@ -93,11 +82,11 @@ impl<K: Ord, V> Node<K, V> {
         {
             let node = match *subtree {
                 None => return None,
-                Some(ref mut n) => n
+                Some(ref mut n) => n,
             };
             match key.cmp(&node.key) {
-                Ordering::Less    => { return Node::remove(&mut node.left, key) }
-                Ordering::Greater => { return Node::remove(&mut node.right, key) }
+                Ordering::Less => return Node::remove(&mut node.left, key),
+                Ordering::Greater => return Node::remove(&mut node.right, key),
                 Ordering::Equal => {}
             }
         }
@@ -107,31 +96,29 @@ impl<K: Ord, V> Node<K, V> {
     fn rotate_down(subtree: &mut Option<Box<Node<K, V>>>) -> Option<V> {
         let case = match *subtree {
             None => return None,
-            Some(ref root) => {
-                match (&root.left, &root.right) {
-                    (&None, &None) => { RemovalCases::RemoveNode }
-                    (&Some(ref left), &Some(ref right)) => {
-                        if left.priority >= right.priority {
-                            RemovalCases::RotateRight
-                        } else {
-                            RemovalCases::RotateLeft
-                        }
+            Some(ref root) => match (&root.left, &root.right) {
+                (&None, &None) => RemovalCases::RemoveNode,
+                (&Some(ref left), &Some(ref right)) => {
+                    if left.priority >= right.priority {
+                        RemovalCases::RotateRight
+                    } else {
+                        RemovalCases::RotateLeft
                     }
-                    (&Some(_), &None) => { RemovalCases::RotateRight }
-                    (&None, &Some(_)) => { RemovalCases::RotateLeft }
                 }
-            }
+                (&Some(_), &None) => RemovalCases::RotateRight,
+                (&None, &Some(_)) => RemovalCases::RotateLeft,
+            },
         };
         match case {
-            RemovalCases::RemoveNode => {
-                subtree.take().map(|n| n.value)
-            }
-            RemovalCases::RotateLeft => {
-                subtree.as_mut().and_then(|n| { n.left_rotate(); Node::rotate_down(&mut n.left) })
-            }
-            RemovalCases::RotateRight => {
-                subtree.as_mut().and_then(|n| { n.right_rotate(); Node::rotate_down(&mut n.right) })
-            }
+            RemovalCases::RemoveNode => subtree.take().map(|n| n.value),
+            RemovalCases::RotateLeft => subtree.as_mut().and_then(|n| {
+                n.left_rotate();
+                Node::rotate_down(&mut n.left)
+            }),
+            RemovalCases::RotateRight => subtree.as_mut().and_then(|n| {
+                n.right_rotate();
+                Node::rotate_down(&mut n.right)
+            }),
         }
     }
 
@@ -139,7 +126,7 @@ impl<K: Ord, V> Node<K, V> {
     fn is_heap_property_violated(&self, subtree: &Option<Box<Node<K, V>>>) -> bool {
         match *subtree {
             None => false,
-            Some(ref b) => self.priority < b.priority
+            Some(ref b) => self.priority < b.priority,
         }
     }
 
@@ -179,4 +166,3 @@ impl<K: Ord, V> Node<K, V> {
         }
     }
 }
-

@@ -1,15 +1,15 @@
 #![feature(test)]
 
-extern crate test;
 extern crate rand;
+extern crate test;
 extern crate treap;
 
 use rand::{SeedableRng, StdRng, XorShiftRng};
 use test::Bencher;
 
-use std::iter::{FromIterator, Extend};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use std::iter::{Extend, FromIterator};
 
 use treap::TreapMap;
 

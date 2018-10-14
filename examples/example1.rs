@@ -1,8 +1,6 @@
-
 extern crate treap;
 
 use treap::TreapMap;
-
 
 fn main() {
     let mut t = TreapMap::new();
@@ -43,5 +41,4 @@ fn main() {
         *v = *v + *k;
     }
     println!("{:?}", r.get(&2));
-
 }
