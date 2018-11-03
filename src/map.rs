@@ -2,7 +2,7 @@ use rand;
 
 use std::default::Default;
 use std::iter::{FromIterator, IntoIterator};
-use std::ops::{Index, IndexMut};
+use std::ops::{Index, IndexMut, Range};
 
 use rand::FromEntropy;
 use rand::prng::XorShiftRng;
@@ -256,6 +256,52 @@ impl<K: Ord + Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
         self.size -= output.len();
     }
 }
+
+
+impl<K: Ord+Clone, Rng: rand::Rng> TreapMap<K, (), Rng> {
+    pub fn remove_range(&mut self, range: Range<K>, output: &mut Vec<K>) {
+        let max_prio = ::std::f64::MAX;
+        let mut root: Option<Box<Node<K, ()>>> = self.root.take();
+        let res = Node::insert_or_replace(&mut root, Node::new(range.start.clone(), (), max_prio));
+        let mut root = root.unwrap();
+
+        let (left, right) = (root.left.take(), root.right.take());
+        if res.is_some() {
+            output.push(root.key)
+        };
+
+        let mut root = right;
+        let res = Node::insert_or_replace(&mut root, Node::new(range.end.clone(), (), max_prio));
+        let mut root = root.unwrap();
+        let (mid, mut right) = (root.left.take(), root.right.take());
+        if res.is_some() {
+            let x = Node::new(range.end.clone(), (), self.rng.next_f64());
+            Node::insert_or_replace(&mut right, x);
+        }
+
+        *root = Node::new(range.start.clone(), (), max_prio);
+        root.left = left;
+        root.right = right;
+        let mut root = Some(root);
+        let res = Node::remove(&mut root, &range.start);
+        assert!(res.is_some());
+
+
+        let iter = IntoIter {
+            nodes: match mid {
+                None => Vec::new(),
+                Some(n) => vec![*n]
+            }
+        };
+
+        output.extend(iter.map(|(k, _)| k));
+
+
+        self.root = root;
+        self.size -= output.len();
+    }
+}
+
 
 impl<K: Ord, V, Rng: rand::Rng> Extend<(K, V)> for TreapMap<K, V, Rng> {
     #[inline]
